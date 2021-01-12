@@ -25,12 +25,12 @@ def initial_function(
         container=containerInput
     )
     ## Get file in moviepy object
-    if fileURL.endswith(".mp4"):
+    if fileURL.lower().endswith(".mp4"):
         clip = VideoFileClip(sasURL)
-    elif fileURL.endswith(".mp3"):
+    elif fileURL.lower().endswith(".mp3") | fileURL.lower().endswith(".wav"):
         clip = AudioFileClip(sasURL)
     else:
-        raise ValueError(f"File is neither MP4 nor MP3: {fileURL}")
+        raise ValueError(f"File is neither MP4 nor MP3/WAV: {fileURL}")
     ## Decide action based on file's length
     if clip.duration > 3600:
         ## If longer than an hour, add to queue (outside of function)
