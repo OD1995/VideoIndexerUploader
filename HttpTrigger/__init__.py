@@ -23,12 +23,12 @@ def main(req: func.HttpRequest, msg: func.Out[str]):
         fileURL=fileURL,
         containerInput=containerInput
     )
+    logging.info(f"result: {result}")
 
     if result == "split":
-        queueMessage = json.dumps({
-            'fileURL' : fileURL,
-            'containerInput' : containerInput
-        })
+        logging.info("File too big, so splitting needed abc")
+        queueMessage = f"{fileURL}__________{containerInput}"
+        logging.info(f"Message added to queue: {queueMessage}")
         msg.set(queueMessage)
     #     return f"Message added to queue: {queueMessage}"
     # else:
