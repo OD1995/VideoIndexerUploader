@@ -30,6 +30,6 @@ def main(req: func.HttpRequest, msg: func.Out[str]):
             'containerInput' : containerInput
         })
         msg.set(queueMessage)
-        return f"Message added to queue: {queueMessage}"
-    else:
-        return result
+    #     return f"Message added to queue: {queueMessage}"
+    # else:
+    #     return result
