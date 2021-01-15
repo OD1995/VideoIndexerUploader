@@ -23,7 +23,7 @@ def initial_function(
         fileURL=fileURL,
         block_blob_service=bbs,
         container=containerInput
-    )
+    ).replace(" ","%20")
     ## Get file in moviepy object
     if fileURL.lower().endswith(".mp4"):
         clip = VideoFileClip(sasURL)
@@ -32,11 +32,11 @@ def initial_function(
     else:
         raise ValueError(f"File is neither MP4 nor MP3/WAV: {fileURL}")
     ## Decide action based on file's length
-    if clip.duration > 3600:
-        ## If longer than an hour, add to queue (outside of function)
+    if clip.duration > 7200:
+        ## If longer than 2 hours, add to queue (outside of function)
         return "split"
     else:
-        ## If shorter than an hour, upload to Video Indexer
+        ## If shorter than 2 hours, upload to Video Indexer
         fileID = upload_file(
             fileURL=fileURL,
             bbs=bbs,

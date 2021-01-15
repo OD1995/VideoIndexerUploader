@@ -30,6 +30,3 @@ def main(req: func.HttpRequest, msg: func.Out[str]):
         queueMessage = f"{fileURL}__________{containerInput}"
         logging.info(f"Message added to queue: {queueMessage}")
         msg.set(queueMessage)
-    #     return f"Message added to queue: {queueMessage}"
-    # else:
-    #     return result

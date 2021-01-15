@@ -78,7 +78,7 @@ class VideoIndexer():
         ## Get SAS URL
         sasURL = get_SAS_URL(fileURL=video_url,
                              block_blob_service=self.block_blob_service,
-                             container=self.container_source)
+                             container=self.container_source).replace(" ","%20")
         
         params = {
             'streamingPreset': 'Default',

@@ -16,19 +16,18 @@ def main(event: func.EventGridEvent, msg: func.Out[str]):
     logging.info('Python EventGrid trigger processed an event: %s', options)
 
     fileURL = options['fileUrl']
+    logging.info(f"fileURL: {fileURL}")
     containerInput = options['container']
+    logging.info(f"containerInput: {containerInput}")
 
     result = initial_function(
         fileURL=fileURL,
         containerInput=containerInput
     )
+    logging.info(f"result: {result}")
 
     if result == "split":
-        queueMessage = json.dumps({
-            'fileURL' : fileURL,
-            'containerInput' : containerInput
-        })
+        logging.info("File too big, so splitting needed abc")
+        queueMessage = f"{fileURL}__________{containerInput}"
+        logging.info(f"Message added to queue: {queueMessage}")
         msg.set(queueMessage)
-        return f"Message added to queue: {queueMessage}"
-    else:
-        return result
