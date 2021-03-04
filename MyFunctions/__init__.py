@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import os
 from urllib.parse import unquote
 import requests
+import pyodbc
 
 def initial_function(
     fileURL,
@@ -24,10 +25,13 @@ def initial_function(
         block_blob_service=bbs,
         container=containerInput
     ).replace(" ","%20")
+    logging.info(f"sasURL: {sasURL}")
     ## Get file in moviepy object
     if fileURL.lower().endswith(".mp4"):
+        logging.info("it's a video file")
         clip = VideoFileClip(sasURL)
     elif fileURL.lower().endswith(".mp3") | fileURL.lower().endswith(".wav"):
+        logging.info("it's an audio file")
         clip = AudioFileClip(sasURL)
     else:
         raise ValueError(f"File is neither MP4 nor MP3/WAV: {fileURL}")
@@ -42,6 +46,12 @@ def initial_function(
             bbs=bbs,
             containerInput=containerInput
         )
+        ## Insert row into VideoIndexerIDs
+        Q = f"""
+        INSERT INTO VideoIndexerIDs (VideoID,FileURL)
+        VALUES ('{fileID}','{fileURL}')
+        """
+        run_sql_query(Q)
         return f"File uploaded, ID: {fileID}"
 
 def upload_file(
@@ -78,3 +88,20 @@ def get_SAS_URL(fileURL,
     expiry=datetime.utcnow() + timedelta(days=1)
     )
     return f"{fileURL}?{sasTokenRead}"
+
+def run_sql_query(query):
+
+    ## Get information used to create connection string
+    username = 'matt.shepherd'
+    password = os.getenv("sqlPassword")
+    driver = '{ODBC Driver 17 for SQL Server}'
+    server = os.getenv("sqlServer")
+    database = 'AzureCognitive'
+    ## Create connection string
+    connectionString = f'DRIVER={driver};SERVER={server};PORT=1433;DATABASE={database};UID={username};PWD={password}'
+    ## Execute query
+    with pyodbc.connect(connectionString) as conn:
+        with conn.cursor() as cursor:
+            logging.info("About to execute 'INSERT' query")
+            cursor.execute(query)
+            logging.info("'INSERT' query executed")

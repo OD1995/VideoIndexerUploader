@@ -26,7 +26,9 @@ def main(req: func.HttpRequest, msg: func.Out[str]):
     logging.info(f"result: {result}")
 
     if result == "split":
-        logging.info("File too big, so splitting needed abc")
+        logging.info("File too big, so splitting needed")
         queueMessage = f"{fileURL}__________{containerInput}"
         logging.info(f"Message added to queue: {queueMessage}")
         msg.set(queueMessage)
+
+    return func.HttpResponse("done")

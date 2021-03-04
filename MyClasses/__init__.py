@@ -82,7 +82,7 @@ class VideoIndexer():
         
         params = {
             'streamingPreset': 'Default',
-            'indexingPreset': 'DefaultWithNoiseReduction',
+            'indexingPreset': 'Default',
             'language': video_language,
             'name': video_name,
             'accessToken': self.access_token,
@@ -152,6 +152,6 @@ class VideoIndexer():
                 time.sleep(retry_after + 1)
                 retry_count -= 1
                 continue
-            raise Exception('Error uploading video to video indexer')
+            raise Exception(f'Error uploading video to video indexer\nStatus code: {upload_video_req.status_code}\nText: {upload_video_req.text}')
 
         return upload_video_req
