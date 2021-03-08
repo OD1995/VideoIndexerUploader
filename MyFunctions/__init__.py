@@ -26,21 +26,27 @@ def initial_function(
         container=containerInput
     ).replace(" ","%20")
     logging.info(f"sasURL: {sasURL}")
-    ## Get file in moviepy object
-    if fileURL.lower().endswith(".mp4"):
-        logging.info("it's a video file")
-        clip = VideoFileClip(sasURL)
-    elif fileURL.lower().endswith(".mp3") | fileURL.lower().endswith(".wav"):
-        logging.info("it's an audio file")
-        clip = AudioFileClip(sasURL)
-    else:
-        raise ValueError(f"File is neither MP4 nor MP3/WAV: {fileURL}")
+    try:
+        ## Get file in moviepy object
+        if fileURL.lower().endswith(".mp4"):
+            logging.info("it's a video file")
+            clip = VideoFileClip(sasURL)
+        elif fileURL.lower().endswith(".mp3") | fileURL.lower().endswith(".wav"):
+            logging.info("it's an audio file")
+            clip = AudioFileClip(sasURL)
+        else:
+            raise ValueError(f"File is neither MP4 nor MP3/WAV: {fileURL}")
+    except OSError:
+        ## If we get an error from reading in the URL, we're going to retry
+        logging.info("error from reading in, let's retry")
+        return "retry"
     ## Decide action based on file's length
     if clip.duration > 7200:
         ## If longer than 2 hours, add to queue (outside of function)
         return "split"
     else:
         ## If shorter than 2 hours, upload to Video Indexer
+        logging.info("file is shorter than 2 hours")
         fileID = upload_file(
             fileURL=fileURL,
             bbs=bbs,
@@ -67,8 +73,8 @@ def upload_file(
         block_blob_service=bbs,
         container_source=containerInput
     )
-    ## Give it the same name as in blob storage
-    fileName = unquote(fileURL.split("/")[-1])
+    ## Give it the same name as in blob storage (80 char limit)
+    fileName = unquote(fileURL.split("/")[-1])[:80]
     ## Upload to Video Indexer
     r = vi.upload_to_video_indexer(
         video_url=fileURL,
@@ -99,6 +105,7 @@ def run_sql_query(query):
     database = 'AzureCognitive'
     ## Create connection string
     connectionString = f'DRIVER={driver};SERVER={server};PORT=1433;DATABASE={database};UID={username};PWD={password}'
+    logging.info(f"connectionString: {connectionString}")
     ## Execute query
     with pyodbc.connect(connectionString) as conn:
         with conn.cursor() as cursor:
