@@ -39,9 +39,11 @@ def main(event: func.EventGridEvent, msg: func.Out[str]):
         ## Get first bit before "_"
         prefix = fileName.split("_")[0]
         if "of" not in prefix:
-            logging.info("We have an error from a non-split file, not sure what to do....")
+            raise ValueError("We have an error from a non-split file, not sure what to do....")
         else:
             logging.info("Reading in URL failed, let's try to create it again")
-            queueMessage = f"{fileURL}__________{containerInput}__________{prefix}"
+            ## Get rid of the "XofY_" bit at the front of the file name
+            fileURL2 = fileURL.replace(f"{prefix}_","")
+            queueMessage = f"{fileURL2}__________{containerInput}__________{prefix}"
             logging.info(f"Message added to queue: {queueMessage}")
             msg.set(queueMessage)

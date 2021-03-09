@@ -53,11 +53,17 @@ def initial_function(
             containerInput=containerInput
         )
         ## Insert row into VideoIndexerIDs
-        Q = f"""
+        Q1 = f"""
         INSERT INTO VideoIndexerIDs (VideoID,FileURL)
         VALUES ('{fileID}','{fileURL}')
         """
-        run_sql_query(Q)
+        run_sql_query(Q1)
+        ## Insert row into VideoIndexerUploads
+        Q2 = f"""
+        INSERT INTO VideoIndexerUploads (FileURL)
+        VALUES ('{fileURL}')
+        """
+        run_sql_query(Q2)
         return f"File uploaded, ID: {fileID}"
 
 def upload_file(
